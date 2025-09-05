@@ -8,7 +8,7 @@ from gneiss.utils.file_utils import (
     get_files_by_extension,
     batch_rename,
     apply_rename,
-    generate_sequential_names
+    generate_sequential_names,
 )
 
 from gneiss.utils.metadata_utils import (
@@ -17,7 +17,7 @@ from gneiss.utils.metadata_utils import (
     get_creation_date,
     get_gps_coordinates,
     strip_all_metadata,
-    copy_metadata
+    copy_metadata,
 )
 
 __all__ = [
@@ -30,5 +30,5 @@ __all__ = [
     "get_creation_date",
     "get_gps_coordinates",
     "strip_all_metadata",
-    "copy_metadata"
+    "copy_metadata",
 ]
