@@ -5,7 +5,7 @@ File utility functions for Gneiss-Engine.
 import os
 import re
 from pathlib import Path
-from typing import List, Optional, Union, Tuple, Dict, Any, Callable
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 
 def get_files_by_extension(

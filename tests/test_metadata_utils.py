@@ -10,12 +10,12 @@ from PIL import Image as PILImage
 from PIL.ExifTags import TAGS
 
 from gneiss.utils.metadata_utils import (
+    copy_metadata,
     extract_exif,
-    get_image_metadata,
     get_creation_date,
     get_gps_coordinates,
+    get_image_metadata,
     strip_all_metadata,
-    copy_metadata,
 )
 
 

@@ -5,19 +5,19 @@ This script demonstrates how to use the metadata utility functions
 to work with image metadata.
 """
 
-import os
 import json
+import os
 from pathlib import Path
 from pprint import pprint
 
 # Import Gneiss-Engine utilities
 from gneiss.utils.metadata_utils import (
+    copy_metadata,
     extract_exif,
-    get_image_metadata,
     get_creation_date,
     get_gps_coordinates,
+    get_image_metadata,
     strip_all_metadata,
-    copy_metadata,
 )
 
 

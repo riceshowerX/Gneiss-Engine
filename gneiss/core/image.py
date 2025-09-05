@@ -7,10 +7,10 @@ for all image manipulation operations in Gneiss-Engine.
 
 import os
 from pathlib import Path
-from typing import Optional, Union, Tuple, Dict, Any, List
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from PIL import Image as PILImage
-from PIL import ImageDraw, ImageFont, ImageOps, ImageEnhance, ImageFilter
+from PIL import ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
 from PIL.Image import Resampling
 
 

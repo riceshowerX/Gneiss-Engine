@@ -5,10 +5,10 @@ This module provides tools for processing multiple images in batch operations.
 """
 
 import os
-from pathlib import Path
-from typing import List, Dict, Any, Union, Callable, Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import partial
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from tqdm import tqdm
 

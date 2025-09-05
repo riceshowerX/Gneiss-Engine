@@ -6,8 +6,8 @@ to process multiple images in parallel.
 """
 
 import os
-from pathlib import Path
 from glob import glob
+from pathlib import Path
 
 # Import Gneiss-Engine classes
 from gneiss import Image

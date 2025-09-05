@@ -6,10 +6,10 @@ including EXIF, IPTC, and XMP data.
 """
 
 from pathlib import Path
-from typing import Dict, Any, Union, Optional, List
+from typing import Any, Dict, List, Optional, Union
 
 from PIL import Image
-from PIL.ExifTags import TAGS, GPSTAGS
+from PIL.ExifTags import GPSTAGS, TAGS
 
 
 def extract_exif(image_path: Union[str, Path]) -> Dict[str, Any]:
