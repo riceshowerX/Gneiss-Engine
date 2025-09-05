@@ -1,23 +1,14 @@
-# Gneiss-Engine 安装指南
+# Gneiss-Engine 本地开发环境设置指南
 
-本指南将帮助您在不同环境中安装Gneiss-Engine。
+本指南将帮助您配置Gneiss-Engine的本地开发环境。
 
 ## 系统要求
 
 - Python 3.7 或更高版本
 - pip（Python包管理器）
+- git（版本控制系统）
 
-## 基本安装
-
-使用pip安装Gneiss-Engine的最新稳定版本：
-
-```bash
-pip install gneiss-engine
-```
-
-## 从源代码安装
-
-如果您想从源代码安装Gneiss-Engine，可以按照以下步骤操作：
+## 本地开发安装步骤
 
 1. 克隆仓库：
 
@@ -26,27 +17,26 @@ git clone https://github.com/yourusername/gneiss-engine.git
 cd gneiss-engine
 ```
 
-2. 安装依赖项：
+2. 安装基础依赖：
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 安装Gneiss-Engine：
+3. 以开发模式安装：
 
 ```bash
 pip install -e .
 ```
 
-这将以开发模式安装Gneiss-Engine，这意味着您对源代码的任何更改都会立即反映在安装中。
+这将以"可编辑"模式安装包，允许您修改代码并立即看到变化。
 
-## 安装可选依赖
+## 安装开发依赖
 
-Gneiss-Engine有一些可选依赖项，可以提供额外的功能：
+如需运行测试或进行开发，可安装额外依赖：
 
 ```bash
-# 安装开发依赖（用于测试和开发）
-pip install gneiss-engine[dev]
+pip install -r requirements-dev.txt
 ```
 
 ## 验证安装
@@ -55,7 +45,7 @@ pip install gneiss-engine[dev]
 
 ```python
 from gneiss import Image
-print(f"Gneiss-Engine 已成功安装！版本: {Image.__version__}")
+print("Gneiss-Engine 开发环境已成功设置！")
 ```
 
 ## 常见问题
@@ -88,17 +78,23 @@ brew install libtiff libjpeg webp little-cms2
 
 如果您遇到其他安装问题，请查看[GitHub仓库的问题页面](https://github.com/yourusername/gneiss-engine/issues)，或者提交一个新的问题。
 
-## 升级
+## 更新代码
 
-要升级到最新版本的Gneiss-Engine，请运行：
+要获取最新的代码更改，请运行：
 
 ```bash
-pip install --upgrade gneiss-engine
+git pull origin main
 ```
 
-## 卸载
+然后重新安装：
 
-如果需要卸载Gneiss-Engine，请运行：
+```bash
+pip install -e .
+```
+
+## 卸载开发环境
+
+如果需要卸载开发环境中的Gneiss-Engine，请运行：
 
 ```bash
 pip uninstall gneiss-engine
