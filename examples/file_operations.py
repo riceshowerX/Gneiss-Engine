@@ -5,6 +5,8 @@ This script demonstrates how to use the file utility functions
 for batch renaming and file management.
 """
 
+import os
+from glob import glob
 from pathlib import Path
 
 # Import Gneiss-Engine utilities
@@ -110,8 +112,9 @@ def main():
             results = apply_rename(rename_map)
 
             success_count = sum(1 for result in results.values() if result)
-            msg = f"Renamed {success_count}/{len(sample_files)} files successfully."
-            print(msg)
+            print(
+                f"Successfully renamed {success_count} out of {len(sample_files)} files."
+            )
 
         else:
             print("No sample files available for the rename example.")
@@ -129,8 +132,8 @@ def main():
             # Generate a rename map using regex
             regex_rename_map = batch_rename(
                 files=renamed_files,
-                pattern=r"photo_(\d+)",  # Match "photo_" + digits
-                replacement=r"image_\1",  # Replace with "image_" + captured digits
+                pattern=r"photo_(\d+)",  # Match "photo_" followed by digits
+                replacement=r"image_\1",  # Replace with "image_" followed by the captured digits
                 use_regex=True,
             )
 
@@ -143,8 +146,9 @@ def main():
             results = apply_rename(regex_rename_map)
 
             success_count = sum(1 for result in results.values() if result)
-            msg = f"Renamed {success_count}/{len(renamed_files)} files successfully."
-            print(msg)
+            print(
+                f"Successfully renamed {success_count} out of {len(renamed_files)} files."
+            )
 
         else:
             print("No renamed files available for the regex rename example.")
@@ -153,7 +157,7 @@ def main():
         print(f"Error in regex batch rename: {e}")
 
     print(
-        "\nFile operations examples completed. Check the 'output/file_ops' directory."
+        "\nFile operations examples completed. Check the 'output/file_ops' directory for results."
     )
 
 

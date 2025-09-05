@@ -2,12 +2,13 @@
 Unit tests for the BatchProcessor class.
 """
 
+import os
 import unittest
 from pathlib import Path
 
 from PIL import Image as PILImage
 
-
+from gneiss import Image
 from gneiss.core.batch import BatchProcessor
 
 

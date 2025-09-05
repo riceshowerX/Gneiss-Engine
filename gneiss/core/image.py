@@ -5,8 +5,9 @@ This module provides the main Image class that serves as the foundation
 for all image manipulation operations in Gneiss-Engine.
 """
 
+import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from PIL import Image as PILImage
 from PIL import ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
@@ -40,7 +41,7 @@ class Image:
             ValueError: If the source is not a valid image file or PIL Image object.
         """
         self.path: Optional[str] = None
-        self.metadata: Dict[Union[str, Tuple[int, int]], Any] = {}
+        self.metadata: Dict[str, Any] = {}
         self.format_params: Dict[str, Any] = {}
 
         if isinstance(source, (str, Path)):
@@ -71,11 +72,10 @@ class Image:
 
         # Extract EXIF data if available
         try:
-            if hasattr(self.image, "getexif"):
-                exif = self.image.getexif()
-                if exif:
-                    self.metadata["exif"] = exif
-        except Exception:
+            exif = self.image._getexif()
+            if exif:
+                self.metadata["exif"] = exif
+        except (AttributeError, Exception):
             # EXIF data not available or not supported
             pass
 
@@ -484,11 +484,7 @@ class Image:
                    Values > 1.0 increase brightness, values < 1.0 decrease brightness.
 
         Returns:
-            Image: The modified Image instance for method chaining.
-
-        Example:
-            >>> img = Image("photo.jpg")
-            >>> img.adjust_brightness(1.2)  # Increase brightness by 20%
+            The Image instance for method chaining.
         """
         enhancer = ImageEnhance.Brightness(self.image)
         self.image = enhancer.enhance(factor)
@@ -503,11 +499,7 @@ class Image:
                    Values > 1.0 increase contrast, values < 1.0 decrease contrast.
 
         Returns:
-            Image: The modified Image instance for method chaining.
-
-        Example:
-            >>> img = Image("photo.jpg")
-            >>> img.adjust_contrast(1.5)  # Increase contrast by 50%
+            The Image instance for method chaining.
         """
         enhancer = ImageEnhance.Contrast(self.image)
         self.image = enhancer.enhance(factor)
@@ -523,12 +515,7 @@ class Image:
                    A value of 0.0 produces a grayscale image.
 
         Returns:
-            Image: The modified Image instance for method chaining.
-
-        Example:
-            >>> img = Image("photo.jpg")
-            >>> img.adjust_color(0.8)  # Reduce saturation by 20%
-            >>> img.adjust_color(0.0)   # Convert to grayscale
+            The Image instance for method chaining.
         """
         enhancer = ImageEnhance.Color(self.image)
         self.image = enhancer.enhance(factor)

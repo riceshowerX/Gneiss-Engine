@@ -2,6 +2,7 @@
 Unit tests for the file utility functions.
 """
 
+import os
 import unittest
 from pathlib import Path
 

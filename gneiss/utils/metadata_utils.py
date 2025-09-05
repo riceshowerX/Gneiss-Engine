@@ -6,7 +6,7 @@ including EXIF, IPTC, and XMP data.
 """
 
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from PIL import Image
 from PIL.ExifTags import GPSTAGS, TAGS

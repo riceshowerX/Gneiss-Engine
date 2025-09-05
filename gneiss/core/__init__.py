@@ -1,19 +1,10 @@
 """
-Gneiss Engine Core Module.
+Core modules for Gneiss-Engine.
 
-This package provides the core functionality for the Gneiss Engine,
-including image processing and batch operations.
+This package contains the core functionality for image manipulation and batch processing.
 """
 
-__version__ = "2.0.0"
-__all__ = ["Image", "BatchProcessor", "ImageError"]
+from gneiss.core.batch import BatchProcessor
+from gneiss.core.image import Image
 
-from .image import Image, ImageError
-from .batch import BatchProcessor
-
-# Enable async support
-import asyncio
-
-async def open_image(path: str) -> Image:
-    """Async helper to open an image."""
-    return await Image.load_async(path)
+__all__ = ["Image", "BatchProcessor"]
