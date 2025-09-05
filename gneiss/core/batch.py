@@ -57,7 +57,19 @@ class BatchProcessor:
             show_progress: Whether to show a progress bar.
 
         Returns:
-            A dictionary mapping input paths to output paths or exceptions.
+            Dict[str, Union[str, Exception]]: A dictionary where keys are input paths
+            and values are either output paths (str) or Exception objects if processing failed.
+
+        Example:
+            >>> processor = BatchProcessor()
+            >>> def resize_op(img):
+            ...     return img.resize(width=800, maintain_aspect=True)
+            >>> results = processor.process_images(
+            ...     ["img1.jpg", "img2.png"],
+            ...     resize_op,
+            ...     output_dir="output",
+            ...     show_progress=True
+            ... )
         """
         results = {}
 

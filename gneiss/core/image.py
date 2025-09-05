@@ -40,7 +40,7 @@ class Image:
             ValueError: If the source is not a valid image file or PIL Image object.
         """
         self.path: Optional[str] = None
-        self.metadata: Dict[str, Any] = {}
+        self.metadata: Dict[Union[str, Tuple[int, int]], Any] = {}
         self.format_params: Dict[str, Any] = {}
 
         if isinstance(source, (str, Path)):
@@ -71,10 +71,11 @@ class Image:
 
         # Extract EXIF data if available
         try:
-            exif = self.image._getexif()
-            if exif:
-                self.metadata["exif"] = exif
-        except (AttributeError, Exception):
+            if hasattr(self.image, "getexif"):
+                exif = self.image.getexif()
+                if exif:
+                    self.metadata["exif"] = exif
+        except Exception:
             # EXIF data not available or not supported
             pass
 
@@ -483,7 +484,11 @@ class Image:
                    Values > 1.0 increase brightness, values < 1.0 decrease brightness.
 
         Returns:
-            The Image instance for method chaining.
+            Image: The modified Image instance for method chaining.
+
+        Example:
+            >>> img = Image("photo.jpg")
+            >>> img.adjust_brightness(1.2)  # Increase brightness by 20%
         """
         enhancer = ImageEnhance.Brightness(self.image)
         self.image = enhancer.enhance(factor)
@@ -498,7 +503,11 @@ class Image:
                    Values > 1.0 increase contrast, values < 1.0 decrease contrast.
 
         Returns:
-            The Image instance for method chaining.
+            Image: The modified Image instance for method chaining.
+
+        Example:
+            >>> img = Image("photo.jpg")
+            >>> img.adjust_contrast(1.5)  # Increase contrast by 50%
         """
         enhancer = ImageEnhance.Contrast(self.image)
         self.image = enhancer.enhance(factor)
@@ -514,7 +523,12 @@ class Image:
                    A value of 0.0 produces a grayscale image.
 
         Returns:
-            The Image instance for method chaining.
+            Image: The modified Image instance for method chaining.
+
+        Example:
+            >>> img = Image("photo.jpg")
+            >>> img.adjust_color(0.8)  # Reduce saturation by 20%
+            >>> img.adjust_color(0.0)   # Convert to grayscale
         """
         enhancer = ImageEnhance.Color(self.image)
         self.image = enhancer.enhance(factor)
