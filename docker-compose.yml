@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  gneiss-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - REDIS_URL=redis://redis:6379/0
+      - MODEL_SERVER_URL=http://model-server:5000
+    depends_on:
+      - redis
+      - model-server
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2'
+
+  model-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.model
+    ports:
+      - "5000:5000"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+    deploy:
+      resources:
+        devices:
+          - driver: nvidia
+            count: 1
+            capabilities: [gpu]
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+
+  monitoring:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - gneiss-api
+
+volumes:
+  redis-data:
+  model-cache:
