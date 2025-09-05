@@ -1,9 +1,8 @@
-"""
+ """
 Batch processing functionality for Gneiss-Engine.
 
 This module provides tools for processing multiple images in batch operations.
 """
-
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -47,10 +46,13 @@ class BatchProcessor:
 
         Args:
             image_paths: List of paths to the images to process.
-            operation: A function that takes an Image object and returns a processed Image object.
-            output_dir: Directory where processed images will be saved. If None, images will be saved
-                       in the same directory as the input images.
-            output_format: Format to save the processed images in. If None, the original format is used.
+            operation: A function that takes an Image object and
+                       returns a processed Image object.
+            output_dir: Directory where processed images will be saved.
+                       If None, images will be saved in the same
+                       directory as the input images.
+            output_format: Format to save the processed images in.
+                          If None, the original format is used.
             output_suffix: Suffix to add to the output filenames.
             show_progress: Whether to show a progress bar.
 
@@ -143,8 +145,8 @@ class BatchProcessor:
         Args:
             image_paths: List of paths to the images to convert.
             output_format: Format to convert the images to (e.g., 'JPEG', 'PNG', 'WEBP').
-            output_dir: Directory where converted images will be saved. If None, images will be saved
-                       in the same directory as the input images.
+            output_dir: Directory where converted images will be saved.
+                       If None, images will be saved in the same directory as the input images.
             quality: Quality setting for the output format (if applicable).
             show_progress: Whether to show a progress bar.
 
@@ -183,8 +185,8 @@ class BatchProcessor:
             width: Target width in pixels. If None, it will be calculated based on height.
             height: Target height in pixels. If None, it will be calculated based on width.
             maintain_aspect: Whether to maintain the aspect ratio of the original images.
-            output_dir: Directory where resized images will be saved. If None, images will be saved
-                       in the same directory as the input images.
+            output_dir: Directory where resized images will be saved.
+                       If None, images will be saved in the same directory as the input images.
             output_format: Format to save the resized images in. If None, the original format is used.
             show_progress: Whether to show a progress bar.
 
@@ -224,10 +226,11 @@ class BatchProcessor:
         Args:
             image_paths: List of paths to the images to watermark.
             watermark: Path to a watermark image file or an Image object.
-            position: The position of the watermark. Options: 'center', 'top_left',
-                      'top_right', 'bottom_left', 'bottom_right'.
+            position: The position of the watermark. Options: 'center', 
+                      'top_left', 'top_right', 'bottom_left', 'bottom_right'.
             opacity: The opacity of the watermark (0.0 to 1.0).
-            padding: The padding from the edges in pixels (for non-center positions).
+            padding: The padding from the edges in pixels 
+                     (for non-center positions).
             output_dir: Directory where watermarked images will be saved. If None, images will be saved
                        in the same directory as the input images.
             output_format: Format to save the watermarked images in. If None, the original format is used.

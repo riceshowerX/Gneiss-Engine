@@ -2,7 +2,6 @@
 Unit tests for the metadata utility functions.
 """
 
-
 import unittest
 from pathlib import Path
 

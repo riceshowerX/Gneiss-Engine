@@ -5,7 +5,6 @@ This module provides the main Image class that serves as the foundation
 for all image manipulation operations in Gneiss-Engine.
 """
 
-
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
 

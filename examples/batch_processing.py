@@ -55,8 +55,7 @@ def main():
         )
 
         success_count = sum(
-            1 for result in results.values()
-            if not isinstance(result, Exception)
+            1 for result in results.values() if not isinstance(result, Exception)
         )
         print(
             f"Successfully converted {success_count} out of "
@@ -78,8 +77,7 @@ def main():
         )
 
         success_count = sum(
-            1 for result in results.values()
-            if not isinstance(result, Exception)
+            1 for result in results.values() if not isinstance(result, Exception)
         )
         print(
             f"Successfully resized {success_count} out of "
@@ -103,8 +101,7 @@ def main():
         )
 
         success_count = sum(
-            1 for result in results.values()
-            if not isinstance(result, Exception)
+            1 for result in results.values() if not isinstance(result, Exception)
         )
         print(
             f"Successfully watermarked {success_count} out of "
@@ -141,8 +138,7 @@ def main():
         )
 
         success_count = sum(
-            1 for result in results.values()
-            if not isinstance(result, Exception)
+            1 for result in results.values() if not isinstance(result, Exception)
         )
         print(
             f"Successfully processed {success_count} out of "

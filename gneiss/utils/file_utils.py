@@ -2,7 +2,6 @@
 File utility functions for Gneiss-Engine.
 """
 
-
 import os
 import re
 from pathlib import Path

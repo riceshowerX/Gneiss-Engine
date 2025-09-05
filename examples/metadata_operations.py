@@ -95,9 +95,9 @@ def main():
         print("Basic image information:")
         print(f"  Format: {metadata['basic'].get('format')}")
         print(f"  Mode: {metadata['basic'].get('mode')}")
-        print(
-            f"  Size: {metadata['basic'].get('width')}x{metadata['basic'].get('height')}"
-        )
+        width = metadata['basic'].get('width')
+        height = metadata['basic'].get('height')
+        print(f"  Size: {width}x{height}")
 
         # Save the metadata to a JSON file
         metadata_json_path = output_dir / "metadata.json"
@@ -142,9 +142,9 @@ def main():
             print("GPS coordinates found:")
             print(f"  Latitude: {gps_coords['latitude']}")
             print(f"  Longitude: {gps_coords['longitude']}")
-            print(
-                f"  Google Maps link: https://maps.google.com/?q={gps_coords['latitude']},{gps_coords['longitude']}"
-            )
+            lat = gps_coords['latitude']
+            lon = gps_coords['longitude']
+            print(f"  Google Maps link: https://maps.google.com/?q={lat},{lon}")
         else:
             print("No GPS coordinates found in the image metadata.")
 
@@ -169,12 +169,10 @@ def main():
             # Verify that metadata was stripped
             stripped_exif = extract_exif(stripped_image_path)
             if not stripped_exif:
-                print(
-                    "Verification successful: No EXIF data found in the stripped image."
-                )
+                print("Verification successful: No EXIF data in stripped image.")
             else:
                 print(
-                    "Warning: Some EXIF data may still be present in the stripped image."
+                    "Warning: Some EXIF data may remain in stripped image."
                 )
         else:
             print(f"Failed to strip metadata from {stripped_image_path}")
@@ -200,7 +198,7 @@ def main():
 
         if success:
             print(
-                f"Successfully copied metadata from {source_image_path.name} to {target_image_path.name}"
+                f"Copied metadata: {source_image_path.name} -> {target_image_path.name}"
             )
 
             # Verify that metadata was copied
@@ -220,24 +218,24 @@ def main():
 
                 if matches > 0:
                     print(
-                        f"Verification successful: {matches} key EXIF fields match between source and target."
+                        f"Verification: {matches} key EXIF fields match."
                     )
                 else:
                     print(
-                        "Warning: No matching EXIF fields found between source and target."
+                        "Warning: No matching EXIF fields found."
                     )
             else:
                 print("Warning: Could not verify metadata copying.")
         else:
-            print(
-                f"Failed to copy metadata from {source_image_path.name} to {target_image_path.name}"
-            )
+            source_name = source_image_path.name
+            target_name = target_image_path.name
+            print(f"Failed to copy metadata from {source_name} to {target_name}")
 
     except Exception as e:
         print(f"Error copying metadata: {e}")
 
     print(
-        "\nMetadata operations examples completed. Check the 'output/metadata_ops' directory for results."
+        "\nMetadata operations completed. Check 'output/metadata_ops' directory."
     )
 
 

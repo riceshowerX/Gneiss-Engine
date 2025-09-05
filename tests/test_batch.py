@@ -2,7 +2,6 @@
 Unit tests for the BatchProcessor class.
 """
 
-
 import unittest
 from pathlib import Path
 

@@ -2,7 +2,6 @@
 Unit tests for the Image class.
 """
 
-
 import unittest
 from pathlib import Path
 
