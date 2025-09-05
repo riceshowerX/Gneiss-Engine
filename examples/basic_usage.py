@@ -94,11 +94,14 @@ def main():
         processed_img = img.resize(width=800) \
                           .adjust_brightness(1.2) \
                           .adjust_contrast(1.1) \
+                          .sharpen(factor=1.3) \
                           .add_text_watermark(
                               text="© Gneiss-Engine",
                               position="bottom_right",
                               font_size=18,
-                              color=(255, 255, 255, 180)
+                              color=(255, 255, 255, 180),
+                              outline_color=(0, 0, 0, 120),
+                              outline_width=1
                           )
         
         output_path = output_dir / "example4_chained.webp"

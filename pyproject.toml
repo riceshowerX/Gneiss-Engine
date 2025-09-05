@@ -1,0 +1,102 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gneiss-engine"
+version = "0.2.0"
+description = "A rock-solid, high-performance Python core for metamorphic image manipulation"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "Gneiss-Engine Contributors", email = "your.email@example.com"}
+]
+maintainers = [
+    {name = "Gneiss-Engine Maintainers", email = "maintainers@example.com"}
+]
+keywords = ["image-processing", "batch-processing", "image-manipulation", "pillow", "computer-vision"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "Pillow>=9.0.0",
+    "tqdm>=4.62.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/gneiss-engine"
+Documentation = "https://github.com/yourusername/gneiss-engine#readme"
+Repository = "https://github.com/yourusername/gneiss-engine"
+Issues = "https://github.com/yourusername/gneiss-engine/issues"
+Changelog = "https://github.com/yourusername/gneiss-engine/releases"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0.0",
+    "pytest-cov>=2.12.0",
+    "black>=21.5b2",
+    "isort>=5.9.0",
+    "flake8>=3.9.0",
+    "mypy>=0.910",
+    "types-Pillow",
+]
+docs = [
+    "sphinx>=4.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+    "myst-parser>=0.15.0",
+]
+
+[tool.setuptools]
+packages = {find = {where = ["."]}}
+include-package-data = true
+
+[tool.setuptools.package-dir]
+gneiss = "gneiss"
+
+[tool.black]
+line-length = 88
+target-version = ['py37', 'py38', 'py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.nox
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 88
+
+[tool.mypy]
+python_version = "3.7"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

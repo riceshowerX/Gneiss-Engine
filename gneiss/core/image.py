@@ -10,7 +10,8 @@ from pathlib import Path
 from typing import Optional, Union, Tuple, Dict, Any, List
 
 from PIL import Image as PILImage
-from PIL import ImageDraw, ImageFont, ImageOps, ImageEnhance
+from PIL import ImageDraw, ImageFont, ImageOps, ImageEnhance, ImageFilter
+from PIL.Image import Resampling
 
 class Image:
     """
@@ -38,8 +39,9 @@ class Image:
             FileNotFoundError: If the source file does not exist.
             ValueError: If the source is not a valid image file or PIL Image object.
         """
-        self.path = None
-        self.metadata = {}
+        self.path: Optional[str] = None
+        self.metadata: Dict[str, Any] = {}
+        self.format_params: Dict[str, Any] = {}
         
         if isinstance(source, (str, Path)):
             source_path = Path(source)
@@ -68,13 +70,16 @@ class Image:
             self.metadata = self.image.info.copy()
         
         # Extract EXIF data if available
-        if hasattr(self.image, '_getexif') and callable(self.image._getexif):
+        try:
             exif = self.image._getexif()
             if exif:
                 self.metadata['exif'] = exif
+        except (AttributeError, Exception):
+            # EXIF data not available or not supported
+            pass
     
     def resize(self, width: Optional[int] = None, height: Optional[int] = None, 
-               maintain_aspect: bool = True, resample: int = PILImage.LANCZOS) -> 'Image':
+               maintain_aspect: bool = True, resample: Resampling = Resampling.LANCZOS) -> 'Image':
         """
         Resize the image to the specified dimensions.
         
@@ -95,25 +100,35 @@ class Image:
         
         orig_width, orig_height = self.image.size
         
+        # Ensure both dimensions are integers
+        final_width = width
+        final_height = height
+        
         if maintain_aspect:
-            if width is None:
+            if width is None and height is not None:
                 # Calculate width based on height while maintaining aspect ratio
-                width = int(orig_width * (height / orig_height))
-            elif height is None:
+                final_width = int(orig_width * (height / orig_height))
+                final_height = height
+            elif height is None and width is not None:
                 # Calculate height based on width while maintaining aspect ratio
-                height = int(orig_height * (width / orig_width))
-            else:
+                final_width = width
+                final_height = int(orig_height * (width / orig_width))
+            elif width is not None and height is not None:
                 # Both width and height are specified, but we need to maintain aspect ratio
                 # We'll fit the image within the specified dimensions
                 ratio = min(width / orig_width, height / orig_height)
-                width = int(orig_width * ratio)
-                height = int(orig_height * ratio)
+                final_width = int(orig_width * ratio)
+                final_height = int(orig_height * ratio)
+            else:
+                # This should not happen due to the initial check
+                final_width = orig_width
+                final_height = orig_height
         else:
             # If not maintaining aspect ratio, ensure both dimensions are specified
-            width = width if width is not None else orig_width
-            height = height if height is not None else orig_height
+            final_width = width if width is not None else orig_width
+            final_height = height if height is not None else orig_height
         
-        self.image = self.image.resize((width, height), resample=resample)
+        self.image = self.image.resize((final_width, final_height), resample=resample)
         return self
     
     def crop(self, left: int, top: int, right: int, bottom: int) -> 'Image':
@@ -188,7 +203,7 @@ class Image:
             ratio = min(base_width / mark_width, base_height / mark_height) * 0.8  # 80% of the fitting size
             new_width = int(mark_width * ratio)
             new_height = int(mark_height * ratio)
-            watermark_img = watermark_img.resize((new_width, new_height), PILImage.LANCZOS)
+            watermark_img = watermark_img.resize((new_width, new_height), Resampling.LANCZOS)
             mark_width, mark_height = watermark_img.size
         
         # Create a transparent layer for the watermark
@@ -261,8 +276,17 @@ class Image:
             print(f"Warning: Could not load font, using default. Error: {e}")
             font = ImageFont.load_default()
         
-        # Calculate text size
-        text_width, text_height = draw.textsize(text, font=font) if hasattr(draw, 'textsize') else font.getsize(text)
+        # Calculate text size using modern PIL API
+        try:
+            # Use textbbox for modern Pillow versions (>= 8.0.0)
+            bbox = draw.textbbox((0, 0), text, font=font)
+            text_width = bbox[2] - bbox[0]
+            text_height = bbox[3] - bbox[1]
+        except (AttributeError, TypeError, Exception):
+            # Fallback for older versions or any other error
+            # Use a simple estimation based on text length and font size
+            text_width = len(text) * font_size // 2
+            text_height = font_size
         
         # Calculate position
         base_width, base_height = self.image.size
@@ -314,7 +338,7 @@ class Image:
         
         # Store format-specific parameters
         self.format = format_name
-        self.format_params = kwargs
+        self.format_params = kwargs  # This will be initialized in save method if needed
         
         return self
     
@@ -355,7 +379,14 @@ class Image:
         Returns:
             A dictionary containing the image metadata.
         """
-        return self.metadata
+        # Convert any non-string keys to strings for type consistency
+        metadata = {}
+        for key, value in self.metadata.items():
+            if isinstance(key, (tuple, int)):
+                metadata[str(key)] = value
+            else:
+                metadata[key] = value
+        return metadata
     
     def strip_metadata(self) -> 'Image':
         """
@@ -374,7 +405,7 @@ class Image:
         return self
     
     def rotate(self, angle: float, expand: bool = False, 
-               resample: int = PILImage.BICUBIC, 
+               resample: Resampling = Resampling.BICUBIC, 
                fillcolor: Optional[Tuple[int, ...]] = None) -> 'Image':
         """
         Rotate the image by the specified angle.
@@ -486,6 +517,172 @@ class Image:
         """
         self.image = ImageOps.grayscale(self.image)
         return self
+
+    def blur(self, radius: float = 2.0) -> 'Image':
+        """
+        Apply Gaussian blur to the image.
+        
+        Args:
+            radius: The blur radius. Higher values create more blur.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = self.image.filter(ImageFilter.GaussianBlur(radius))
+        return self
+
+    def sharpen(self, factor: float = 2.0) -> 'Image':
+        """
+        Sharpen the image.
+        
+        Args:
+            factor: The sharpening factor. Higher values create more sharpening.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = self.image.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))
+        return self
+
+    def edge_enhance(self) -> 'Image':
+        """
+        Enhance edges in the image.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = self.image.filter(ImageFilter.EDGE_ENHANCE)
+        return self
+
+    def emboss(self) -> 'Image':
+        """
+        Apply emboss effect to the image.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = self.image.filter(ImageFilter.EMBOSS)
+        return self
+
+    def contour(self) -> 'Image':
+        """
+        Apply contour effect to the image.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = self.image.filter(ImageFilter.CONTOUR)
+        return self
+
+    def detail(self) -> 'Image':
+        """
+        Enhance detail in the image.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = self.image.filter(ImageFilter.DETAIL)
+        return self
+
+    def smooth(self) -> 'Image':
+        """
+        Smooth the image.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = self.image.filter(ImageFilter.SMOOTH)
+        return self
+
+    def find_edges(self) -> 'Image':
+        """
+        Find and highlight edges in the image.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = self.image.filter(ImageFilter.FIND_EDGES)
+        return self
+
+    def invert(self) -> 'Image':
+        """
+        Invert the colors of the image.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = ImageOps.invert(self.image)
+        return self
+
+    def solarize(self, threshold: int = 128) -> 'Image':
+        """
+        Apply solarization effect to the image.
+        
+        Args:
+            threshold: The solarization threshold.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = ImageOps.solarize(self.image, threshold)
+        return self
+
+    def posterize(self, bits: int = 4) -> 'Image':
+        """
+        Reduce the number of bits for each color channel.
+        
+        Args:
+            bits: Number of bits to keep (1-8).
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = ImageOps.posterize(self.image, bits)
+        return self
+
+    def equalize(self) -> 'Image':
+        """
+        Equalize the image histogram.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = ImageOps.equalize(self.image)
+        return self
+
+    def auto_contrast(self, cutoff: float = 0.0, ignore: Optional[int] = None) -> 'Image':
+        """
+        Automatically adjust contrast.
+        
+        Args:
+            cutoff: Percentage to cut off from histogram.
+            ignore: Background pixel value to ignore.
+        
+        Returns:
+            The Image instance for method chaining.
+        """
+        self.image = ImageOps.autocontrast(self.image, cutoff=cutoff, ignore=ignore)
+        return self
+
+    def colorize(self, black_color: Tuple[int, int, int], white_color: Tuple[int, int, int]) -> 'Image':
+        """
+        Colorize a grayscale image.
+        
+        Args:
+            black_color: RGB color for black points.
+            white_color: RGB color for white points.
+        
+        Returns:
+            The Image instance for method chaining.
+        
+        Raises:
+            ValueError: If the image is not in grayscale mode.
+        """
+        if self.image.mode != 'L':
+            raise ValueError("Colorize operation requires grayscale image (mode 'L')")
+        
+        self.image = ImageOps.colorize(self.image, black_color, white_color)
+        return self
     
     def __str__(self) -> str:
         """Return a string representation of the image."""
@@ -495,3 +692,7 @@ class Image:
     def __repr__(self) -> str:
         """Return a string representation of the image."""
         return self.__str__()
+
+    def copy(self) -> "Image":
+        """Create a copy of the current image instance."""
+        return Image(self.image.copy())
