@@ -5,7 +5,7 @@ This script creates some simple sample images that can be used
 with the Gneiss-Engine examples.
 """
 
-import os
+
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont

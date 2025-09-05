@@ -2,12 +2,12 @@
 Unit tests for the metadata utility functions.
 """
 
-import os
+
 import unittest
 from pathlib import Path
 
 from PIL import Image as PILImage
-from PIL.ExifTags import TAGS
+
 
 from gneiss.utils.metadata_utils import (
     copy_metadata,
@@ -50,11 +50,11 @@ class TestMetadataUtils(unittest.TestCase):
         # Add some basic EXIF-like data
         # Note: This is a simplified approach and doesn't create actual EXIF data
         # For real EXIF testing, you would need a sample image with real EXIF data
-        exif_data = {
-            "Software": "Gneiss-Engine Test",
-            "Artist": "Test User",
-            "Copyright": "2025 Gneiss-Engine",
-        }
+        # exif_data = {
+        #     "Software": "Gneiss-Engine Test",
+        #     "Artist": "极Test User",
+        #     "Copyright": "2025 Gneiss-Engine",
+        # }
 
         img.save(path, format="JPEG", exif=PILImage.Exif(), quality=95)
 

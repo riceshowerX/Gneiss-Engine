@@ -6,9 +6,7 @@ to work with image metadata.
 """
 
 import json
-import os
 from pathlib import Path
-from pprint import pprint
 
 # Import Gneiss-Engine utilities
 from gneiss.utils.metadata_utils import (
@@ -141,7 +139,7 @@ def main():
         gps_coords = get_gps_coordinates(sample_image)
 
         if gps_coords:
-            print(f"GPS coordinates found:")
+            print("GPS coordinates found:")
             print(f"  Latitude: {gps_coords['latitude']}")
             print(f"  Longitude: {gps_coords['longitude']}")
             print(

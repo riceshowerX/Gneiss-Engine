@@ -5,12 +5,10 @@ This script demonstrates how to use the BatchProcessor class
 to process multiple images in parallel.
 """
 
-import os
 from glob import glob
 from pathlib import Path
 
 # Import Gneiss-Engine classes
-from gneiss import Image
 from gneiss.core.batch import BatchProcessor
 
 
@@ -57,10 +55,12 @@ def main():
         )
 
         success_count = sum(
-            1 for result in results.values() if not isinstance(result, Exception)
+            1 for result in results.values()
+            if not isinstance(result, Exception)
         )
         print(
-            f"Successfully converted {success_count} out of {len(image_paths)} images to WEBP format."
+            f"Successfully converted {success_count} out of "
+            f"{len(image_paths)} images to WEBP format."
         )
 
     except Exception as e:
@@ -78,9 +78,13 @@ def main():
         )
 
         success_count = sum(
-            1 for result in results.values() if not isinstance(result, Exception)
+            1 for result in results.values()
+            if not isinstance(result, Exception)
         )
-        print(f"Successfully resized {success_count} out of {len(image_paths)} images.")
+        print(
+            f"Successfully resized {success_count} out of "
+            f"{len(image_paths)} images."
+        )
 
     except Exception as e:
         print(f"Error in batch resizing: {e}")
@@ -99,10 +103,12 @@ def main():
         )
 
         success_count = sum(
-            1 for result in results.values() if not isinstance(result, Exception)
+            1 for result in results.values()
+            if not isinstance(result, Exception)
         )
         print(
-            f"Successfully watermarked {success_count} out of {len(image_paths)} images."
+            f"Successfully watermarked {success_count} out of "
+            f"{len(image_paths)} images."
         )
 
     except Exception as e:
@@ -135,17 +141,20 @@ def main():
         )
 
         success_count = sum(
-            1 for result in results.values() if not isinstance(result, Exception)
+            1 for result in results.values()
+            if not isinstance(result, Exception)
         )
         print(
-            f"Successfully processed {success_count} out of {len(image_paths)} images with custom operation."
+            f"Successfully processed {success_count} out of "
+            f"{len(image_paths)} images with custom operation."
         )
 
     except Exception as e:
         print(f"Error in custom batch processing: {e}")
 
     print(
-        "\nBatch processing examples completed. Check the 'output/batch' directory for results."
+        "\nBatch processing examples completed. "
+        "Check the 'output/batch' directory for results."
     )
 
 

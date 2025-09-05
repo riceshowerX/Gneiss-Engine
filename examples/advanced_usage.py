@@ -5,9 +5,7 @@ This script demonstrates advanced functionality of Gneiss-Engine
 with more complex image processing operations and effects.
 """
 
-import os
 from pathlib import Path
-from typing import Tuple
 
 # Import the Gneiss-Engine Image class
 from gneiss import Image
@@ -144,7 +142,8 @@ def main():
 
     print("\nAdvanced examples completed. Check the 'output' directory for results.")
     print(
-        "Note: Some examples may require specific image characteristics to show optimal results."
+        "Note: Some examples may require specific image characteristics "
+        "to show optimal results."
     )
 
 

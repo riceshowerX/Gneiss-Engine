@@ -5,7 +5,6 @@ This script demonstrates the core functionality of Gneiss-Engine
 with simple, easy-to-understand examples.
 """
 
-import os
 from pathlib import Path
 
 # Import the Gneiss-Engine Image class

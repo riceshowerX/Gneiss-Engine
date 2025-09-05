@@ -5,9 +5,9 @@ This module provides the main Image class that serves as the foundation
 for all image manipulation operations in Gneiss-Engine.
 """
 
-import os
+
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 from PIL import Image as PILImage
 from PIL import ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps

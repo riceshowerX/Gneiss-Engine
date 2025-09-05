@@ -5,8 +5,7 @@ This script demonstrates how to use the file utility functions
 for batch renaming and file management.
 """
 
-import os
-from glob import glob
+
 from pathlib import Path
 
 # Import Gneiss-Engine utilities

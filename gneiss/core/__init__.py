@@ -1,7 +1,8 @@
 """
 Core modules for Gneiss-Engine.
 
-This package contains the core functionality for image manipulation and batch processing.
+This package contains the core functionality
+for image manipulation and batch processing.
 """
 
 from gneiss.core.batch import BatchProcessor
