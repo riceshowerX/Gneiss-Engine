@@ -6,7 +6,6 @@ import os
 import unittest
 from pathlib import Path
 
-import pytest
 from PIL import Image as PILImage
 
 from gneiss import Image

@@ -186,6 +186,9 @@ class TestFileUtils(unittest.TestCase):
     
     def test_generate_sequential_names(self):
         """Test generating sequential filenames."""
+        # Count the number of files in the test directory
+        file_count = len([f for f in self.test_dir.iterdir() if f.is_file()])
+        
         # Generate sequential names
         names = generate_sequential_names(
             directory=self.test_dir,
@@ -197,8 +200,7 @@ class TestFileUtils(unittest.TestCase):
         
         # Check that we got the expected number of names
         # (should match the number of files in the test directory)
-        expected_count = len(list(self.test_dir.iterdir()))
-        self.assertEqual(len(names), expected_count)
+        self.assertEqual(len(names), file_count)
         
         # Check that the names have the expected format
         for i, name in enumerate(names, 1):
