@@ -43,14 +43,8 @@ Gneiss-Engine is being designed with the following key capabilities in mind:
 - **Extensibility**: Designed as a core "engine," it is easy to extend with custom plugins and functionality.
 - **Reliability**: A strong focus on comprehensive testing and predictable behavior. It should be the bedrock of your image processing pipeline.
 
-## Installation
+## Installation (Local Development)
 
-### For Users (when published)
-```bash
-pip install gneiss-engine
-```
-
-### For Developers (current local installation)
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/gneiss-engine.git

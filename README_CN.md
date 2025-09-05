@@ -50,14 +50,8 @@ Gneiss-Engine设计时考虑了以下关键功能：
 
 **可靠性**: 专注于全面的测试和可预测的行为。它应该是您图像处理流程的基石。
 
-## 安装
+## 安装 (本地开发)
 
-### 用户安装 (发布后可用)
-```bash
-pip install gneiss-engine
-```
-
-### 开发者安装 (当前本地安装方式)
 1. 克隆仓库:
 ```bash
 git clone https://github.com/yourusername/gneiss-engine.git
