@@ -52,9 +52,24 @@ Gneiss-Engine设计时考虑了以下关键功能：
 
 ## 安装
 
+### 用户安装 (发布后可用)
 ```bash
 pip install gneiss-engine
 ```
+
+### 开发者安装 (当前本地安装方式)
+1. 克隆仓库:
+```bash
+git clone https://github.com/yourusername/gneiss-engine.git
+cd gneiss-engine
+```
+
+2. 以开发模式安装:
+```bash
+pip install -e .
+```
+
+这将以"可编辑"模式安装包，允许您修改代码并立即看到变化。
 
 ## 使用示例
 

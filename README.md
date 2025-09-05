@@ -45,9 +45,24 @@ Gneiss-Engine is being designed with the following key capabilities in mind:
 
 ## Installation
 
+### For Users (when published)
 ```bash
 pip install gneiss-engine
 ```
+
+### For Developers (current local installation)
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/gneiss-engine.git
+cd gneiss-engine
+```
+
+2. Install in development mode:
+```bash
+pip install -e .
+```
+
+This will install the package in "editable" mode, allowing you to modify the code and see changes immediately.
 
 ## Usage Example
 
