@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -33,16 +33,14 @@ classifiers = [
 ]
 dependencies = [
     "Pillow>=9.0.0,<10.0.0",
-    "Pillow-SIMD>=9.0.0; platform_machine == 'x86_64'",
     "tqdm>=4.62.0",
+    "psutil>=5.9.0",
+    "Pillow-SIMD>=9.0.0,<10.0.0; platform_machine == 'x86_64'",
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/gneiss-engine"
-Documentation = "https://github.com/yourusername/gneiss-engine#readme"
-Repository = "https://github.com/yourusername/gneiss-engine"
-Issues = "https://github.com/yourusername/gneiss-engine/issues"
-Changelog = "https://github.com/yourusername/gneiss-engine/releases"
+"Homepage" = "https://github.com/yourusername/Gneiss-Engine"
+"Bug Tracker" = "https://github.com/yourusername/Gneiss-Engine/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -54,11 +52,9 @@ dev = [
     "mypy>=0.910",
     "types-Pillow",
 ]
-docs = [
-    "sphinx>=4.0.0",
-    "sphinx-rtd-theme>=1.0.0",
-    "myst-parser>=0.15.0",
-]
+avif = ["pillow-avif>=1.0.0"]
+heic = ["pillow-heif>=0.10.0"]
+all = ["pillow-avif>=1.0.0", "pillow-heif>=0.10.0"]
 
 [tool.setuptools]
 packages = {find = {where = ["."]}}
@@ -69,32 +65,42 @@ gneiss = "gneiss"
 
 [tool.black]
 line-length = 88
-target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
-include = '\.pyi?$'
+target-version = ['py38']
+include = "\\.pyi?$"
 exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.nox
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
+/(\.
+|_build
+|buck-out
+|build
+|dist
+|\.git
+|\.hg
+|\.mypy_cache
+|\.nox
+|\.tox
+|\.venv
+|venv
+|\.svn
+|CVS
+|__pycache__
+|\.pytest_cache
+|examples/sample_images
 )/
 '''
 
 [tool.isort]
 profile = "black"
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-ensure_newline_before_comments = true
 line_length = 88
+skip_gitignore = true
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "--cov=gneiss --cov-report=term-missing --cov-fail-under=90"
 
 [tool.mypy]
 python_version = "3.8"

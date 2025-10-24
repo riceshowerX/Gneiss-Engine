@@ -64,6 +64,9 @@ class Image:
 
         else:
             raise ValueError("Source must be a file path or a PIL Image object")
+            
+        # Save original image mode for transformations
+        self.original_mode = self.image.mode
 
     def _extract_metadata(self):
         """Extract metadata from the image."""
@@ -151,6 +154,46 @@ class Image:
             The Image instance for method chaining.
         """
         self.image = self.image.crop((left, top, right, bottom))
+        return self
+    
+    def perspective_transform(self, data: List[float]) -> "Image":
+        """
+        Apply a perspective transformation to the image.
+        
+        This method can be used to correct perspective distortion, 
+        such as in photos taken at an angle of documents or buildings.
+
+        Args:
+            data: A list of 8 coefficients for the perspective transformation matrix.
+                  The transformation is defined as:
+                  x' = (a0*x + a1*y + a2) / (c0*x + c1*y + c2)
+                  y' = (b0*x + b1*y + b2) / (c0*x + c1*y + c2)
+                  where data = [a0, a1, a2, b0, b1, b2, c0, c1]
+
+        Returns:
+            The Image instance for method chaining.
+        """
+        # Ensure image mode is RGBA to support transformation
+        if self.image.mode != 'RGBA':
+            self.image = self.image.convert('RGBA')
+        
+        self.image = self.image.transform(
+            self.image.size, 
+            PILImage.PERSPECTIVE, 
+            data, 
+            PILImage.BILINEAR
+        )
+        
+        # Convert back to original mode, unless it was RGBA
+        if self.image.mode == 'RGBA' and self.original_mode != 'RGBA':
+            # If original mode was RGB, convert to RGB and discard transparency
+            if self.original_mode == 'RGB':
+                background = PILImage.new('RGB', self.image.size, (255, 255, 255))
+                background.paste(self.image, mask=self.image.split()[3])
+                self.image = background
+            else:
+                self.image = self.image.convert(self.original_mode)
+        
         return self
 
     def add_watermark(
@@ -348,25 +391,34 @@ class Image:
 
         Raises:
             ValueError: If the format is not supported.
+            ImportError: If the format requires additional dependencies that are not installed.
         """
         format_name = format_name.upper()
 
         # Check if the format is supported
         supported_formats = PILImage.registered_extensions()
         format_extensions = {v: k for k, v in supported_formats.items()}
-
-        # Add support for AVIF and HEIC if Pillow-SIMD is installed
-        try:
-            import pillow_avif
-            supported_formats.update({".avif": "AVIF"})
-        except ImportError:
-            pass
-
-        try:
-            import pillow_heif
-            supported_formats.update({".heic": "HEIC"})
-        except ImportError:
-            pass
+        
+        # 检查特殊格式的依赖
+        if format_name == "AVIF":
+            try:
+                import pillow_avif
+                format_extensions["AVIF"] = ".avif"
+            except ImportError:
+                raise ImportError(
+                    "AVIF format support requires pillow-avif plugin. "
+                    "Install it with: pip install pillow-avif"
+                )
+                
+        elif format_name == "HEIC":
+            try:
+                import pillow_heif
+                format_extensions["HEIC"] = ".heic"
+            except ImportError:
+                raise ImportError(
+                    "HEIC format support requires pillow-heif plugin. "
+                    "Install it with: pip install pillow-heif"
+                )
 
         if format_name not in format_extensions:
             raise ValueError(f"Unsupported format: {format_name}")
@@ -502,6 +554,69 @@ class Image:
         enhancer = ImageEnhance.Brightness(self.image)
         self.image = enhancer.enhance(factor)
         return self
+        
+    def adaptive_brightness(self, threshold: float = 0.5, target_brightness: float = 0.5) -> "Image":
+        """
+        Adjust brightness adaptively based on image histogram.
+        
+        This method analyzes the image histogram and adjusts brightness
+        differently for darker and brighter areas, helping to preserve details
+        while achieving a more balanced overall brightness.
+
+        Args:
+            threshold: Brightness threshold (0.0-1.0) separating dark from bright areas.
+            target_brightness: Target average brightness (0.0-1.0) to aim for.
+
+        Returns:
+            The Image instance for method chaining.
+        """
+        # Convert to grayscale for analysis
+        grayscale = self.image.convert('L')
+        
+        # Calculate histogram
+        histogram = grayscale.histogram()
+        
+        # Calculate total pixels
+        total_pixels = sum(histogram)
+        
+        # Calculate cumulative distribution
+        cumulative = 0
+        midtone_index = 128  # 128 is middle of 0-255 range
+        
+        # Find the brightness level where 50% of pixels are below
+        for i, count in enumerate(histogram):
+            cumulative += count
+            if cumulative > total_pixels * 0.5:
+                midtone_index = i
+                break
+        
+        # Current average brightness (0-255 to 0-1)
+        current_brightness = midtone_index / 255.0
+        
+        # Calculate adjustment factor
+        # If image is darker than threshold, boost more
+        if current_brightness < threshold:
+            # Dark image - boost more
+            adjustment_factor = target_brightness / max(current_brightness, 0.01)
+            # Limit extreme adjustments
+            adjustment_factor = min(adjustment_factor, 3.0)
+        else:
+            # Bright image - adjust more gently
+            adjustment_factor = 1.0 + (target_brightness - current_brightness) * 0.5
+            # Ensure we're not making it darker than a reasonable minimum
+            adjustment_factor = max(adjustment_factor, 0.7)
+        
+        # Apply the brightness adjustment
+        enhancer = ImageEnhance.Brightness(self.image)
+        self.image = enhancer.enhance(adjustment_factor)
+        
+        # For very dark images, also slightly increase contrast
+        if current_brightness < 0.2:
+            contrast_factor = 1.2
+            enhancer = ImageEnhance.Contrast(self.image)
+            self.image = enhancer.enhance(contrast_factor)
+        
+        return self
 
     def adjust_contrast(self, factor: float) -> "Image":
         """
@@ -565,25 +680,62 @@ class Image:
 
         Args:
             radius: The blur radius. Higher values create more blur.
+                   Recommended range: 0.1-25.0
 
         Returns:
             The Image instance for method chaining.
         """
-        self.image = self.image.filter(ImageFilter.GaussianBlur(radius))
+        if radius < 0:
+            raise ValueError("Radius must be a non-negative value")
+            
+        # Ensure we use a valid blur radius for PIL
+        if radius == 0:
+            return self
+            
+        # For stronger blur effects, apply multiple times or use ImageFilter
+        if radius <= 25:
+            self.image = self.image.filter(ImageFilter.GaussianBlur(radius=radius))
+        else:
+            # For very large radii, we'll apply blur multiple times
+            # with a maximum radius that PIL handles efficiently
+            iterations = int(radius // 25)
+            remaining = radius % 25
+            
+            for _ in range(iterations):
+                self.image = self.image.filter(ImageFilter.GaussianBlur(radius=25))
+            if remaining > 0:
+                self.image = self.image.filter(ImageFilter.GaussianBlur(radius=remaining))
+                
         return self
 
-    def sharpen(self, factor: float = 2.0) -> "Image":
+    def sharpen(self, factor: float = 1.0) -> "Image":
         """
-        Sharpen the image.
+        Sharpen the image with enhanced control.
 
         Args:
-            factor: The sharpening factor. Higher values create more sharpening.
+            factor: Sharpening intensity. Values > 1.0 increase sharpness,
+                   values between 0.0 and 1.0 reduce sharpness.
 
         Returns:
             The Image instance for method chaining.
         """
+        if factor < 0:
+            raise ValueError("Sharpening factor must be a non-negative value")
+            
+        if factor == 0:
+            return self
+            
+        # Use UnsharpMask with parameters scaled by factor
+        radius = 2 * factor
+        percent = 150 * factor
+        threshold = 3
+        
+        # Ensure reasonable values
+        radius = min(radius, 10)  # Limit maximum radius
+        percent = min(percent, 500)  # Limit maximum percentage
+        
         self.image = self.image.filter(
-            ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3)
+            ImageFilter.UnsharpMask(radius=radius, percent=percent, threshold=threshold)
         )
         return self
 
@@ -745,3 +897,24 @@ class Image:
     def copy(self) -> "Image":
         """Create a copy of the current image instance."""
         return Image(self.image.copy())
+        
+    def thumbnail(self, size: Tuple[int, int], resample: Resampling = Resampling.LANCZOS) -> "Image":
+        """
+        Create a thumbnail of the image, maintaining aspect ratio.
+        
+        This method modifies the image in-place to fit within the given size
+        while preserving the aspect ratio. It's optimized for creating preview
+        images with minimal memory usage.
+
+        Args:
+            size: A tuple of (width, height) for the maximum dimensions of the thumbnail.
+            resample: The resampling filter to use.
+
+        Returns:
+            The Image instance for method chaining.
+        """
+        # Create a copy to avoid modifying the original during processing
+        thumb_img = self.image.copy()
+        thumb_img.thumbnail(size, resample=resample)
+        self.image = thumb_img
+        return self
