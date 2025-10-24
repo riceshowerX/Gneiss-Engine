@@ -14,58 +14,152 @@ In software development, handling fundamental image tasks like batch conversion,
 
 The name "Gneiss" (pronounced /naɪs/, like "nice") is inspired by the metamorphic rock, which is formed when existing rocks are fundamentally transformed under immense heat and pressure. In the same spirit, Gneiss-Engine is designed as a foundational toolkit that **re-forms and restructures** your image assets, providing a solid, layered foundation for all manipulation tasks.
 
-## ⚠️ Project Status: A Hobby Project in Early Development
+## ✨ Core Features (Current Implementation)
 
-**Please be aware:** This project is currently in its early conceptual and development stages. It is **not yet ready for production use**, and the API is subject to change without notice.
+Gneiss-Engine has implemented the following key capabilities:
 
-More importantly, **Gneiss-Engine is a personal hobby project**. It is developed and maintained by an individual solely in their spare time. This means that while the project is a labor of love, **development progress will be slow**. Your patience and understanding are greatly appreciated!
-
-We welcome ideas, feedback, and future contributors to help shape its direction.
-
-## ✨ Core Features (Vision)
-
-Gneiss-Engine is being designed with the following key capabilities in mind:
-
-*   **🔄 Metamorphic Conversion:** A simple and powerful API for converting images between various formats (e.g., `PNG`, `JPEG`, `WEBP`, `AVIF`), akin to a rock changing its fundamental structure.
-*   **✍️ Intelligent Renaming:** Advanced batch renaming capabilities based on custom patterns, sequential numbering, or even image metadata (like EXIF data).
-*   **🔍 High-Quality Resizing:** Easy-to-use functions for scaling images while maintaining aspect ratio and image quality.
-*   **💧 Watermarking:** A fluent interface to add text or image-based watermarks with control over opacity, position, and tiling.
-*   **🛠️ Metadata Management:** The ability to easily read, write, and strip image metadata (EXIF, IPTC, etc.).
-*   **⚡ Performance-Focused:** Built on top of highly optimized libraries (like Pillow-SIMD) to ensure speed is a primary feature.
+*   **🔄 Metamorphic Conversion:** A simple and powerful API for converting images between various formats (e.g., `PNG`, `JPEG`, `WEBP`, `AVIF`), with advanced format detection.
+*   **⚡ Batch Processing:** Efficient parallel processing of multiple images with progress tracking and error handling.
+*   **🔍 High-Quality Resizing:** Easy-to-use functions for scaling images while maintaining aspect ratio and image quality using advanced resampling techniques.
+*   **🔄 Transformations:** Comprehensive support for rotations, cropping, flipping, and perspective transformations.
+*   **💧 Watermarking:** A fluent interface to add text or image-based watermarks with control over opacity and position.
+*   **🛠️ Metadata Management:** Complete tools for reading, writing, and stripping image metadata (EXIF, IPTC, etc.).
+*   **🔧 File Operations:** Advanced utilities for finding, filtering, renaming, and managing image files in bulk.
+*   **⚡ Performance-Focused:** Built with resource awareness and optimized for multi-threaded processing.
 
 ## 🚀 Our Philosophy
 
-1.  **Simplicity First:** We believe powerful tools don't have to be complicated. Gneiss-Engine will feature a clean, chainable, and highly readable API.
-2.  **Extensibility:** Designed as a core "engine," it will be easy to extend with custom plugins and functionality.
+1.  **Simplicity First:** We believe powerful tools don't have to be complicated. Gneiss-Engine features a clean, chainable, and highly readable API.
+2.  **Extensibility:** Designed as a core "engine," it is easy to extend with custom plugins and functionality.
 3.  **Reliability:** A strong focus on comprehensive testing and predictable behavior. It should be the bedrock of your image processing pipeline.
 
-## Hypothetical Usage (What We're Aiming For)
+## Installation
 
-Here is a sneak peek at what using Gneiss-Engine might look like. *Note: This is a conceptual example and the final API may differ.*
+```bash
+# Basic installation
+pip install gneiss-engine
+
+# Installation with all optional dependencies
+pip install gneiss-engine[all]
+
+# Installation with specific format support
+# AVIF format support
+pip install gneiss-engine[avif]
+
+# HEIC format support
+pip install gneiss-engine[heic]
+```
+
+## Quick Start
+
+### Basic Image Processing
 
 ```python
-# The package name might be simply 'gneiss' for elegance
-from gneiss import Image
+from gneiss.core import Image
 
-# A simple, fluent API for chainable operations
-try:
-    Image("path/to/source_image.jpg")
-        .resize(width=1024)
-        .add_watermark("logo.png", position="bottom_right", opacity=0.7)
-        .to_format("webp", quality=90)
-        .save("path/to/output/new_image.webp")
-    
-    print("Image processed successfully!")
+# Open an image
+img = Image.open('example.jpg')
 
-except Exception as e:
-    print(f"An error occurred: {e}")
+# Resize and save
+img.resize(width=800, height=600, maintain_aspect=True).save('resized.jpg')
+
+# Apply multiple operations and save in a different format
+img.rotate(90)
+   .crop(left=10, top=10, right=500, bottom=500)
+   .convert_to_grayscale()
+   .save('processed.png')
+
+# Create a thumbnail
+img.thumbnail(size=(128, 128), resample='LANCZOS')
+img.save('thumbnail.jpg')
+```
+
+### Batch Processing
+
+```python
+from gneiss.core import BatchProcessor
+import os
+
+# Create processor
+processor = BatchProcessor(max_workers=4)
+
+# Get all images in a directory
+image_dir = 'images/'
+image_paths = [os.path.join(image_dir, f) for f in os.listdir(image_dir) 
+               if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+
+# Batch convert format
+results = processor.convert_format(
+    image_paths=image_paths,
+    output_format='webp',
+    output_dir='converted/',
+    quality=80,
+    show_progress=True,
+    skip_existing=True
+)
+
+# Print processing results
+print(f"Processing summary:")
+print(f"Total files: {results['metadata']['total']}")
+print(f"Success: {results['metadata']['success']}")
+print(f"Failed: {results['metadata']['failed']}")
+print(f"Skipped: {results['metadata']['skipped']}")
+```
+
+## Example Scripts
+
+Gneiss-Engine provides a collection of example scripts to demonstrate the library's capabilities:
+
+1. **Create Sample Images** - Generate test images for processing
+   ```bash
+   python examples/create_sample_images.py
+   ```
+
+2. **File Operations** - Demonstrate file management and batch operations
+   ```bash
+   python examples/file_operations.py
+   ```
+
+3. **Batch Processing** - Showcase various batch image processing operations
+   ```bash
+   python examples/batch_processing.py
+   ```
+
+4. **Advanced Image Processing** - Demonstrate advanced techniques including enhancement, edge detection, and segmentation
+   ```bash
+   python examples/advanced_image_processing.py
+   ```
+
+5. **Example Documentation** - Learn more about all example scripts
+   ```bash
+   cat examples/README.md
+   ```
+
+## Project Structure
+
+```
+Gneiss-Engine/
+├── gneiss/             # Core package
+│   ├── core/           # Main functionality (Image, BatchProcessor)
+│   └── utils/          # Utility functions (file operations, metadata)
+├── examples/           # Example scripts
+├── tests/              # Unit tests
+├── docs/               # Documentation
+├── setup.py            # Package setup
+└── README.md           # Project documentation
 ```
 
 ## How to Contribute
 
-We are not yet accepting pull requests for features, but we are extremely open to ideas and discussions! If you have a suggestion, find a bug in our early code, or want to be a part of the project's future, please **open an issue** on GitHub.
+We welcome contributions to improve Gneiss-Engine! If you have a suggestion, find a bug, or want to contribute code:
 
-Your feedback during this crucial initial phase is invaluable.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+For more details, please see the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## License
 
