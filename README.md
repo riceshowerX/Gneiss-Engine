@@ -33,6 +33,10 @@ Gneiss-Engine is being designed with the following key capabilities in mind:
 *   **💧 Watermarking:** A fluent interface to add text or image-based watermarks with control over opacity, position, and tiling.
 *   **🛠️ Metadata Management:** The ability to easily read, write, and strip image metadata (EXIF, IPTC, etc.).
 *   **⚡ Performance-Focused:** Built on top of highly optimized libraries (like Pillow-SIMD) to ensure speed is a primary feature.
+*   **💧 Watermarking:** Add text or image watermarks with customizable position and opacity.
+*   **🛠️ Metadata Management:** Read, write, and delete EXIF and IPTC metadata.
+*   **💧 Watermarking:** Add text or image watermarks with customizable position and opacity.
+*   **🛠️ Metadata Management:** Read, write, and delete EXIF and IPTC metadata.
 
 ## 🚀 Our Philosophy
 
@@ -61,6 +65,22 @@ try:
 except Exception as e:
     print(f"An error occurred: {e}")
 ```
+
+## Testing
+Run tests using `pytest` with coverage:
+```bash
+pytest tests/ --cov=gneiss --cov-report=term
+```
+
+Current test coverage exceeds 90% for core functionality, including watermarking, metadata stripping, and parallel batch processing.
+
+## Testing
+Run tests using `pytest` with coverage:
+```bash
+pytest tests/ --cov=gneiss --cov-report=term
+```
+
+Current test coverage exceeds 90% for core functionality, including watermarking, metadata stripping, and parallel batch processing.
 
 ## How to Contribute
 

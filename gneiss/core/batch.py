@@ -29,9 +29,30 @@ class BatchProcessor:
 
         Args:
             max_workers: The maximum number of worker threads to use.
-                         If None, it will use the default from ThreadPoolExecutor.
+                         If None, it will dynamically adjust based on system load.
         """
-        self.max_workers = max_workers
+        self.max_workers = max_workers if max_workers is not None else self._calculate_optimal_workers()
+
+    def _calculate_optimal_workers(self) -> int:
+        """
+        Calculate the optimal number of worker threads based on system load.
+
+        Returns:
+            The calculated number of workers.
+        """
+        import os
+        import psutil
+
+        cpu_count = os.cpu_count() or 4
+        cpu_load = psutil.cpu_percent(interval=1) / 100
+        
+        # Adjust workers based on CPU load
+        if cpu_load < 0.5:
+            return min(cpu_count * 2, 32)  # Aggressive scaling if CPU is idle
+        elif cpu_load < 0.8:
+            return cpu_count
+        else:
+            return max(cpu_count // 2, 1)  # Reduce workers if CPU is busy
 
     def process_images(
         self,

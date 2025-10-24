@@ -135,6 +135,40 @@ class TestImage(unittest.TestCase):
             self.assertEqual(pil_img.format, "JPEG")
             self.assertEqual(pil_img.size, (50, 50))
 
+    def test_add_watermark(self):
+        """Test adding an image watermark."""
+        img = Image(self.test_image_path)
+        
+        # Create a simple watermark image
+        watermark_path = self.test_dir / "watermark.png"
+        self._create_test_image(watermark_path, width=20, height=20, color=(0, 0, 255))
+        
+        # Add watermark
+        watermarked = img.add_watermark(
+            watermark=watermark_path,
+            position="bottom_right",
+            opacity=0.7,
+            padding=10
+        )
+        
+        # Verify operation completed
+        output_path = self.test_dir / "watermarked_image.png"
+        watermarked.save(output_path)
+        self.assertTrue(output_path.exists())
+
+    def test_strip_metadata(self):
+        """Test stripping metadata from an image."""
+        img = Image(self.test_image_path)
+        
+        # Add dummy metadata (simulate real metadata)
+        img.metadata = {"dummy_key": "dummy_value"}
+        
+        # Strip metadata
+        stripped_img = img.strip_metadata()
+        
+        # Verify metadata is empty
+        self.assertEqual(len(stripped_img.get_metadata()), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -7,7 +7,7 @@ name = "gneiss-engine"
 version = "0.2.0"
 description = "A rock-solid, high-performance Python core for metamorphic image manipulation"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.8,<3.13"
 license = {text = "MIT"}
 authors = [
     {name = "Gneiss-Engine Contributors", email = "your.email@example.com"}
@@ -32,7 +32,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "Pillow>=9.0.0",
+    "Pillow>=9.0.0,<10.0.0",
+    "Pillow-SIMD>=9.0.0; platform_machine == 'x86_64'",
     "tqdm>=4.62.0",
 ]
 

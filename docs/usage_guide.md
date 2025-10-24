@@ -142,7 +142,11 @@ img.resize(width=1200) \
 
 ## 批处理
 
-Gneiss-Engine提供了强大的批处理功能，可以并行处理多个图像：
+Gneiss-Engine提供了强大的批处理功能，支持并行处理以优化性能：
+
+**性能优化建议**：
+- 使用 `BatchProcessor(max_workers=4)` 调整并行线程数以匹配您的 CPU 核心数。
+- 对于大规模批处理，建议先测试小批量数据以验证性能。
 
 ```python
 from gneiss.core.batch import BatchProcessor
@@ -245,7 +249,16 @@ sequential_names = generate_sequential_names(
 
 ## 元数据操作
 
-Gneiss-Engine可以处理图像元数据：
+Gneiss-Engine可以处理图像元数据，包括读取、写入和剥离：
+
+**剥离元数据**：
+```python
+# 剥离所有元数据
+stripped_img = img.strip_metadata()
+stripped_img.save("output/no_metadata.jpg")
+```
+
+**注意**：剥离元数据适用于隐私保护或合规性要求。
 
 ```python
 from gneiss.utils.metadata_utils import (

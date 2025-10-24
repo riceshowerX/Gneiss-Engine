@@ -340,7 +340,7 @@ class Image:
         Convert the image to the specified format.
 
         Args:
-            format_name: The target format (e.g., 'JPEG', 'PNG', 'WEBP', 'AVIF').
+            format_name: The target format (e.g., 'JPEG', 'PNG', 'WEBP', 'AVIF', 'HEIC').
             **kwargs: Additional format-specific parameters (e.g., quality for JPEG).
 
         Returns:
@@ -354,6 +354,19 @@ class Image:
         # Check if the format is supported
         supported_formats = PILImage.registered_extensions()
         format_extensions = {v: k for k, v in supported_formats.items()}
+
+        # Add support for AVIF and HEIC if Pillow-SIMD is installed
+        try:
+            import pillow_avif
+            supported_formats.update({".avif": "AVIF"})
+        except ImportError:
+            pass
+
+        try:
+            import pillow_heif
+            supported_formats.update({".heic": "HEIC"})
+        except ImportError:
+            pass
 
         if format_name not in format_extensions:
             raise ValueError(f"Unsupported format: {format_name}")

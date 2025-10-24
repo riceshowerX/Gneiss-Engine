@@ -75,9 +75,25 @@ def get_image_metadata(image_path: Union[str, Path]) -> Dict[str, Any]:
             # EXIF data
             metadata["exif"] = extract_exif(image_path)
 
-            # Note: IPTC and XMP extraction would require additional libraries
-            # like python-xmp-toolkit or pyexiv2, which are not included in the
-            # basic dependencies to keep things simple.
+            # Extract IPTC data if available
+            try:
+                from PIL import IptcImagePlugin
+                iptc_data = IptcImagePlugin.getiptcinfo(img)
+                if iptc_data:
+                    metadata["iptc"] = iptc_data
+            except (ImportError, Exception):
+                pass
+
+            # Extract XMP data if available
+            try:
+                from libxmp import XMPFiles
+                xmp_file = XMPFiles(file_path=str(image_path))
+                xmp_data = xmp_file.get_xmp()
+                if xmp_data:
+                    metadata["xmp"] = xmp_data
+                xmp_file.close_file()
+            except (ImportError, Exception):
+                pass
 
             return metadata
     except Exception as e:

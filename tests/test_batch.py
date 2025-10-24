@@ -183,6 +183,28 @@ class TestBatchProcessor(unittest.TestCase):
         # Check that the invalid image resulted in an exception
         self.assertIsInstance(results[str(invalid_paths[1])], Exception)
 
+    def test_parallel_performance(self):
+        """Test parallel processing performance."""
+        import time
+        
+        # Test with different worker counts
+        for max_workers in [1, 2, 4]:
+            processor = BatchProcessor(max_workers=max_workers)
+            
+            # Time the operation
+            start_time = time.time()
+            results = processor.process_images(
+                image_paths=self.test_images,
+                operation=lambda img: img.resize(width=50),
+                output_dir=self.output_dir / f"workers_{max_workers}",
+                show_progress=False,
+            )
+            elapsed_time = time.time() - start_time
+            
+            # Verify all processed
+            self.assertEqual(len(results), len(self.test_images))
+            print(f"Max workers: {max_workers}, Time: {elapsed_time:.2f}s")
+
 
 if __name__ == "__main__":
     unittest.main()
